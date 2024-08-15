@@ -37,6 +37,12 @@ class Game {
         this.#gui = new GUI();
 
         {
+            const globalsFolder = this.#gui.addFolder("Globals");
+            globalsFolder.add(this.timeData, 'delta').listen().disable().name("Delta (s/frame)");
+            globalsFolder.add(this.timeData, 'time').listen().disable().name("Time (s)");
+        }
+
+        {
             const cameraFolder = this.#gui.addFolder('Camera');
             cameraFolder.add(this.camera.position, 'x', 'x');
             cameraFolder.add(this.camera.position, 'y', 'y');
@@ -54,9 +60,9 @@ class Game {
         const sceneFolder = this.#buildDebugGui();
         const addGameObjectGui = (gameObject) => {
             const folder = sceneFolder.addFolder(gameObject.name);
-            folder.add(gameObject.transform.position, 'x');
-            folder.add(gameObject.transform.position, 'y');
-            folder.add(gameObject.transform.position, 'z');
+            folder.add(gameObject.transform.position, 'x').listen();
+            folder.add(gameObject.transform.position, 'y').listen();
+            folder.add(gameObject.transform.position, 'z').listen();
             const compFolder = folder.addFolder('Components');
             gameObject.components.forEach((comp) => {
                 compFolder.addFolder(comp.constructor.name).close();
