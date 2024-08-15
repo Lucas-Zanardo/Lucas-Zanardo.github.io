@@ -11,7 +11,7 @@ export default class InputManager {
                 }
             }
             // if was not down before
-            if(this.keys[ev.key].state == 'up')
+            if(this.keys[ev.key].state === 'up')
                 this.keys[ev.key].firstFrame = true;
 
             this.keys[ev.key].state = 'down';
@@ -25,7 +25,7 @@ export default class InputManager {
                 }
             }
             // if was not up before
-            if(this.keys[ev.key].state == 'down')
+            if(this.keys[ev.key].state === 'down')
                 this.keys[ev.key].firstFrame = true;
             
             this.keys[ev.key].state = 'up';
@@ -40,19 +40,19 @@ export default class InputManager {
     }
 
     isKeyJustPressed(key) {
-        return (key in this.keys) ? this.keys[key].firstFrame && this.keys[key].state == 'down' : false;
+        return (key in this.keys) ? this.keys[key].firstFrame && this.keys[key].state === 'down' : false;
     }
 
     isKeyJustReleased(key) {
-        return (key in this.keys) ? this.keys[key].firstFrame && this.keys[key].state == 'up' : false;
+        return (key in this.keys) ? this.keys[key].firstFrame && this.keys[key].state === 'up' : false;
     }
 
     isKeyUp(key) {
-        return (key in this.keys) ? this.keys[key].state == 'up' : true;
+        return (key in this.keys) ? this.keys[key].state === 'up' : true;
     }
 
     isKeyDown(key) {
-        return (key in this.keys) ? this.keys[key].state == 'down' : false;
+        return (key in this.keys) ? this.keys[key].state === 'down' : false;
     }
 
     ////////////////////////////:
