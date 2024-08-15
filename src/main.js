@@ -21,7 +21,7 @@ function init(loadedModels) {
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.x = 0;
     camera.position.y = 0;
-    camera.position.z = -15;
+    camera.position.z = 15;
     camera.rotation.z = 0;
     camera.rotation.x = 0;
     document.body.appendChild(renderer.domElement);

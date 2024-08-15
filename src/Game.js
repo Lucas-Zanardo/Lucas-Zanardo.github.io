@@ -134,7 +134,7 @@ class Game {
         }
 
         // update all
-        this.#gameObjectManager.update(time);
+        this.#gameObjectManager.update(this.timeData);
         InputManager.Get().update();
 
         // render
