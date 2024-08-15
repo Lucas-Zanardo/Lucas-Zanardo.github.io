@@ -4,61 +4,61 @@ export default class InputManager {
         
         // Input events
         window.addEventListener("keydown", (ev) => {
-            if(!(ev.key in this.keys)) {
-                this.keys[ev.key] = {
+            if(!(ev.code in this.keys)) {
+                this.keys[ev.code] = {
                     state: 'down',
                     firstFrame: true
                 }
             }
             // if was not down before
-            if(this.keys[ev.key].state === 'up')
-                this.keys[ev.key].firstFrame = true;
+            if(this.keys[ev.code].state === 'up')
+                this.keys[ev.code].firstFrame = true;
 
-            this.keys[ev.key].state = 'down';
+            this.keys[ev.code].state = 'down';
         });
 
         window.addEventListener("keyup", (ev) => {
-            if(!(ev.key in this.keys)) {
-                this.keys[ev.key] = {
+            if(!(ev.code in this.keys)) {
+                this.keys[ev.code] = {
                     state: 'up',
                     firstFrame: true
                 }
             }
             // if was not up before
-            if(this.keys[ev.key].state === 'down')
-                this.keys[ev.key].firstFrame = true;
+            if(this.keys[ev.code].state === 'down')
+                this.keys[ev.code].firstFrame = true;
             
-            this.keys[ev.key].state = 'up';
+            this.keys[ev.code].state = 'up';
         });
     }
 
     update() {
-        for(const key in this.keys) {
-            if(this.keys[key].firstFrame)
-                this.keys[key].firstFrame = false;
+        for(const keyCode in this.keys) {
+            if(this.keys[keyCode].firstFrame)
+                this.keys[keyCode].firstFrame = false;
         }
     }
 
-    isKeyJustPressed(key) {
-        return (key in this.keys) ? this.keys[key].firstFrame && this.keys[key].state === 'down' : false;
+    isKeyJustPressed(keyCode) {
+        return (keyCode in this.keys) ? this.keys[keyCode].firstFrame && this.keys[keyCode].state === 'down' : false;
     }
 
-    isKeyJustReleased(key) {
-        return (key in this.keys) ? this.keys[key].firstFrame && this.keys[key].state === 'up' : false;
+    isKeyJustReleased(keyCode) {
+        return (keyCode in this.keys) ? this.keys[keyCode].firstFrame && this.keys[keyCode].state === 'up' : false;
     }
 
-    isKeyUp(key) {
-        return (key in this.keys) ? this.keys[key].state === 'up' : true;
+    isKeyUp(keyCode) {
+        return (keyCode in this.keys) ? this.keys[keyCode].state === 'up' : true;
     }
 
-    isKeyDown(key) {
-        return (key in this.keys) ? this.keys[key].state === 'down' : false;
+    isKeyDown(keyCode) {
+        return (keyCode in this.keys) ? this.keys[keyCode].state === 'down' : false;
     }
 
     ////////////////////////////:
 
-    getAxis(negativeKey, positiveKey) {
-        return this.isKeyDown(positiveKey) - this.isKeyDown(negativeKey);
+    getAxis(negativeKeyCode, positiveKeyCode) {
+        return this.isKeyDown(positiveKeyCode) - this.isKeyDown(negativeKeyCode);
     }
 
     ////////////////////////////:
