@@ -3,6 +3,7 @@ import WebGL from 'three/addons/capabilities/WebGL.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
 import Game from './Game.js';
+import InputManager from './core/InputManager.js';
 
 ////////////////////////////////////////////////////////////////////
 
@@ -25,6 +26,8 @@ function init(loadedModels) {
     camera.rotation.x = 0;
     document.body.appendChild(renderer.domElement);
 
+    InputManager.Get(); // create Input Manager
+
     const game = new Game(renderer, camera);
     game.setModels(loadedModels);
     game.run();
@@ -35,7 +38,7 @@ function init(loadedModels) {
 function loadObjects() {
     const models = {
         // desk: { url: 'desk.gltf' },
-        cube: { url: 'cube.gltf' },
+        // cube: { url: 'models/cube.gltf' },
     };
 
     const manager = new THREE.LoadingManager();
@@ -51,16 +54,24 @@ function loadObjects() {
         }
     };
 
+    // When loaded
     manager.onLoad = () => init(models);
-    {
+
+    // Queue loading
+    if(models.length > 0) {
         console.log("LOADING");
         const gltfLoader = new GLTFLoader(manager);
         for (const model of Object.values(models)) {
+            console.log('--------------> ', model.url);
             gltfLoader.load(MODELS_PATH + model.url, (gltf) => {
                 model.gltf = gltf;
             });
         }
         console.log("LOADED");
+    } else {
+        console.log("No models to load");
+        progressBar.style.opacity = "0";
+        init(models);
     }
 }
 
