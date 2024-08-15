@@ -8,16 +8,21 @@ export default class CameraFollow extends Component {
         super(gameObject);
         this.camera = camera;
         this.target = null;
+        this.smoothing = 10;
+
+        this._targetPos = new THREE.Vector3(0);
     }
 
     setTarget(targetGameObject) {
         this.target = targetGameObject;
+        this._targetPos = targetGameObject.transform.position.clone();
     }
     
     update(time) {
         if(this.target) {
             // FIX: add some smoothing
-            this.camera.lookAt(this.gameObject.transform.position, this.target.transform.position, VECTOR_UP);
+            this._targetPos = this._targetPos.lerp(this.target.transform.position, time.delta * this.smoothing);
+            this.camera.lookAt(this._targetPos);
         }
     }
 }
