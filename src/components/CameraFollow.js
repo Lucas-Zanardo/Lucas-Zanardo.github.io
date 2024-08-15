@@ -1,28 +1,37 @@
-import * as THREE from 'three';
 import Component from './Component';
 
-const VECTOR_UP = new THREE.Vector3(0, 1, 0);
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { addVector3 } from '../utils/debugGui';
 
 export default class CameraFollow extends Component {
-    constructor(gameObject, camera) {
+    constructor(gameObject, camera, renderer) {
         super(gameObject);
-        this.camera = camera;
-        this.target = null;
-        this.smoothing = 10;
+        this.cameraControls = new OrbitControls(camera, renderer.domElement);
+        this.cameraControls.maxDistance = 10;
+        this.cameraControls.autoRotateSpeed = 1;
+        this.cameraControls.enablePan = false;
 
-        this._targetPos = new THREE.Vector3(0);
+        this.cameraControls.minPolarAngle = 0;
+        this.cameraControls.maxPolarAngle = Math.PI / 2.5;
+        this.target = null;
     }
 
     setTarget(targetGameObject) {
         this.target = targetGameObject;
-        this._targetPos = targetGameObject.transform.position.clone();
+        this.cameraControls.target = this.target.transform.position;
     }
     
     update(time) {
         if(this.target) {
-            // FIX: add some smoothing
-            this._targetPos = this._targetPos.lerp(this.target.transform.position, time.delta * this.smoothing);
-            this.camera.lookAt(this._targetPos);
+            this.cameraControls.update(time.delta);
         }
+    }
+
+    editorGui(guiFolder) {
+        guiFolder.add(this.cameraControls, 'maxDistance');
+
+        guiFolder.add(this.cameraControls, 'dampingFactor');
+        guiFolder.add(this.cameraControls, 'enableDamping');
     }
 }
