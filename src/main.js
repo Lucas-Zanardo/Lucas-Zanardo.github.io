@@ -7,21 +7,22 @@ import InputManager from './core/InputManager.js';
 
 ////////////////////////////////////////////////////////////////////
 
-const MODELS_PATH = 'assets/models/';
-
 function init(loadedModels) {
     console.log("INIT");
 
     // setup renderer
     const canvas = document.querySelector("#gameCanvas");
-    const renderer = new THREE.WebGLRenderer({ antialias: true, canvas});
+    const renderer = new THREE.WebGLRenderer({ antialias: true, canvas, logarithmicDepthBuffer: true,});
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     // renderer.setSize(window.innerWidth, window.innerHeight);
     
     // setup camera
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.x = 0;
     camera.position.y = 0;
-    camera.position.z = 15;
+    camera.position.z = 10;
     camera.rotation.z = 0;
     camera.rotation.x = 0;
     document.body.appendChild(renderer.domElement);
@@ -37,8 +38,9 @@ function init(loadedModels) {
 
 function loadObjects() {
     const models = {
-        // desk: { url: 'desk.gltf' },
-        // cube: { url: 'models/cube.gltf' },
+        // template  "object : { url: '<path>' },"
+        plane: { url: 'models/hydravion.gltf' },
+        world: { url: 'models/world.gltf' },
     };
 
     const manager = new THREE.LoadingManager();
@@ -57,14 +59,32 @@ function loadObjects() {
     // When loaded
     manager.onLoad = () => init(models);
 
+    const threeTone = new THREE.TextureLoader().load('images/threeTone.jpg')
+    threeTone.minFilter = THREE.NearestFilter
+    threeTone.magFilter = THREE.NearestFilter
+
     // Queue loading
-    if(models.length > 0) {
+    if(Object.keys(models).length > 0) {
         console.log("LOADING");
         const gltfLoader = new GLTFLoader(manager);
         for (const model of Object.values(models)) {
             console.log('--------------> ', model.url);
-            gltfLoader.load(MODELS_PATH + model.url, (gltf) => {
+            gltfLoader.load(model.url, (gltf) => {
                 model.gltf = gltf;
+
+                gltf.scene.traverse( function( child ) {
+                    if ( child instanceof THREE.Mesh ) {
+                        child.receiveShadow = true;
+                        child.castShadow = true;
+                        child.material = new THREE.MeshToonMaterial({ 
+                            color: child.material.color, 
+                            side: THREE.FrontSide,
+                            shadowSide: THREE.BackSide,
+                            gradientMap: threeTone
+                        });
+                    }
+                } );
+
             });
         }
         console.log("LOADED");
