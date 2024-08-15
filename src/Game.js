@@ -4,6 +4,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js'
 import GameObjectManager from './core/GameObjectManager.js'
 import Player from './components/Player.js';
 import CameraFollow from './components/CameraFollow.js';
+import InputManager from './core/InputManager.js';
 
 class Time {
     delta;
@@ -95,7 +96,6 @@ class Game {
     }
 
     setModels(models) {
-        console.log(models);
         this.#models = models;
     }
 
@@ -129,6 +129,7 @@ class Game {
 
         // update all
         this.#gameObjectManager.update(time);
+        InputManager.Get().update();
 
         // render
         this.renderer.render(this.#scene, this.camera);
