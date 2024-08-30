@@ -5,11 +5,11 @@ export default class Mesh extends Component {
         super(gameObject, model);
         this.model = model;
         if('gltf' in model) {
-            const modelRoot = model.gltf.scene.clone();
-            gameObject.transform.add(modelRoot);
+            this.modelRoot = model.gltf.scene.clone();
         } else {
-            gameObject.transform.add(model.clone());
+            this.modelRoot = model.clone();
         }
+        gameObject.transform.add(this.modelRoot);
     }
 
     update(time) {}
