@@ -9,7 +9,7 @@ const FORWARD = new THREE.Vector3(0, 0, -1);
 const MAX_TURNING_ANGLE = Math.PI / 4;
 const MAX_VERTICAL_ANGLE = Math.PI / 3;
 
-const MIN_SPEED = 0.2;
+const MIN_SPEED = 0; // 0.2;
 
 export default class Player extends Entity {
     constructor(gameObject) {
@@ -50,9 +50,8 @@ export default class Player extends Entity {
         } else {
             const altitudeForce = altitude * this.altitudeFactor * this.currentSpeedPercentage * time.delta;
             this._angles.x += altitudeForce, MAX_VERTICAL_ANGLE;
-            this._angles.x = Math.min(Math.max(this._angles.x, -MAX_VERTICAL_ANGLE), MAX_VERTICAL_ANGLE);
         }
-
+        this._angles.x = Math.min(Math.max(this._angles.x, -MAX_VERTICAL_ANGLE), MAX_VERTICAL_ANGLE);
 
         // Rotation
         const turn = InputManager.Get().getAxis('KeyD', 'KeyA');
@@ -80,6 +79,11 @@ export default class Player extends Entity {
         if(transform.position.x < -GAME_WORLD_SIZE) transform.position.x =  GAME_WORLD_SIZE;
         if(transform.position.z > GAME_WORLD_SIZE)  transform.position.z = -GAME_WORLD_SIZE;
         if(transform.position.z < -GAME_WORLD_SIZE) transform.position.z =  GAME_WORLD_SIZE;
+    }
+
+
+    _animateRotor(time) {
+        // TODO
     }
 
     editorGui(guiFolder) {
