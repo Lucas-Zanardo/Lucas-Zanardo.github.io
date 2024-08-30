@@ -7,19 +7,19 @@ import InputManager from './core/InputManager.js';
 
 ////////////////////////////////////////////////////////////////////
 
-function init(loadedModels) {
+function init(loadedModels, loadedTextures, loadedFiles) {
     console.log("INIT");
 
     // setup renderer
     const canvas = document.querySelector("#gameCanvas");
-    const renderer = new THREE.WebGLRenderer({ antialias: true, canvas, logarithmicDepthBuffer: true,});
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    // renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
-    // renderer.setSize(window.innerWidth, window.innerHeight);
-    
+
     // setup camera
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.x = 0;
     camera.position.y = 0;
     camera.position.z = 10;
@@ -31,20 +31,47 @@ function init(loadedModels) {
 
     const game = new Game(renderer, camera);
     game.setModels(loadedModels);
+    game.setTextures(loadedTextures);
+    game.setFiles(loadedFiles);
     game.run();
 }
 
 ////////////////////////////////////////////////////////////////////
 
+function loadGroup (loader, group, outputProp = 'data', onLoadApply = (obj, data) => {}) {
+    for (const obj of Object.values(group)) {
+        console.log('--------------> ', obj.url);
+        loader.load(obj.url, (data) => {
+            obj[outputProp] = data;
+            onLoadApply(obj, data);
+        }, undefined, console.error);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
 function loadObjects() {
     const models = {
-        // template  "object : { url: '<path>' },"
         plane: { url: 'models/hydravion.gltf' },
         world: { url: 'models/world.gltf' },
+        water: { url: 'models/water.gltf' },
     };
 
-    const manager = new THREE.LoadingManager();
+    const textures = {
+        three_tone_texture: { url: 'images/threeTone.jpg', filter: THREE.NearestFilter },
+        water_texture: { url: 'images/water_texture.png', filter: THREE.LinearFilter },
+        water_texture_disp: { url: 'images/Water_002_DISP.png', filter: THREE.LinearFilter },
+        water_texture_norm: { url: 'images/Water_002_NORM.jpg', filter: THREE.LinearFilter },
+    }
 
+    const files = {
+        water_shader_vertex  : { url: 'shaders/water.vert' },
+        water_shader_fragment: { url: 'shaders/water.frag' },
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    const manager = new THREE.LoadingManager();
     const progressBar = document.querySelector(".progress-bar");
     const progressbarElem = document.querySelector('.progress-bar-filler');
     const progressbarInfo = document.querySelector('.progress-bar-loading-info');
@@ -53,45 +80,51 @@ function loadObjects() {
         progressbarElem.style.width = `${itemsLoaded / itemsTotal * 100 | 0}%`;
         if(itemsLoaded >= itemsTotal) {
             progressBar.style.opacity = "0";
+            setTimeout(() => progressBar.style.display = 'none', 500);
         }
     };
+    manager.onLoad = () => init(models, textures, files);
 
-    // When loaded
-    manager.onLoad = () => init(models);
+    ////////////////////////////////////////////////////////////////////////////////////////
 
-    const threeTone = new THREE.TextureLoader().load('images/threeTone.jpg')
-    threeTone.minFilter = THREE.NearestFilter
-    threeTone.magFilter = THREE.NearestFilter
+    console.log("LOADING");
+    // Load textures
+    loadGroup(new THREE.TextureLoader(manager), textures, 'data', (obj, data) => { 
+        data.minFilter = obj.filter; 
+        data.magFilter = obj.filter;
+    });
 
-    // Queue loading
-    if(Object.keys(models).length > 0) {
-        console.log("LOADING");
-        const gltfLoader = new GLTFLoader(manager);
-        for (const model of Object.values(models)) {
-            console.log('--------------> ', model.url);
-            gltfLoader.load(model.url, (gltf) => {
-                model.gltf = gltf;
+    // Load Models
+    loadGroup(new GLTFLoader(manager), models, 'gltf', (model, gltf) => { 
+        gltf.scene.traverse( function( child ) {
+            if ( child instanceof THREE.Mesh ) {
+                child.receiveShadow = true;
+                child.castShadow = true;
+                console.log(child.material.map);
+                child.material = new THREE.MeshToonMaterial({ 
+                    color: child.material.color,
+                    side: THREE.FrontSide,
+                    shadowSide: THREE.BackSide,
+                    gradientMap: textures.three_tone_texture.data,
+                    depthWrite: true,
+                });
+            }
+        } );
+    });
+    
+    // Load files
+    loadGroup(new THREE.FileLoader(manager), files);
+    console.log("LOADED");
 
-                gltf.scene.traverse( function( child ) {
-                    if ( child instanceof THREE.Mesh ) {
-                        child.receiveShadow = true;
-                        child.castShadow = true;
-                        child.material = new THREE.MeshToonMaterial({ 
-                            color: child.material.color, 
-                            side: THREE.FrontSide,
-                            shadowSide: THREE.BackSide,
-                            gradientMap: threeTone
-                        });
-                    }
-                } );
-
-            });
-        }
-        console.log("LOADED");
-    } else {
-        console.log("No models to load");
+    ////////////////////////////////////////////////////////////////////////////////////////
+    
+    if(Object.keys(models).length === 0
+    && Object.keys(textures).length === 0
+    && Object.keys(files).length === 0) {
+        console.log("No data to load");
         progressBar.style.opacity = "0";
-        init(models);
+        setTimeout(() => progressBar.style.display = 'none', 500);
+        init(models, textures, files);
     }
 }
 
