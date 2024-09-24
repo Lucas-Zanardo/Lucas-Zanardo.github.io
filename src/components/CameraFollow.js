@@ -12,7 +12,7 @@ export default class CameraFollow extends Component {
         this.cameraControls.autoRotateSpeed = 1;
         this.cameraControls.enablePan = false;
 
-        this.cameraControls.minPolarAngle = 0;
+        this.cameraControls.minPolarAngle = 0; // Math.PI / 2;
         this.cameraControls.maxPolarAngle = Math.PI / 2.5;
         this.target = null;
     }

@@ -55,16 +55,17 @@ void main() {
     float diff = saturate(scenelinearEyeDepth - fragmentLinearEyeDepth); // water depth
 
     // waves
-    float displacement = texture2D(u_waveTextureDisplacement, v_uv * u_textureScale + u_waveOffset1 * u_time).x
-                       * texture2D(u_waveTextureDisplacement, v_uv * u_textureScale + u_waveOffset2 * u_time).x;
+    float displacement = 0.0;
+    // float displacement = texture2D(u_waveTextureDisplacement, v_uv * u_textureScale + u_waveOffset1 * u_time).x
+    //                   * texture2D(u_waveTextureDisplacement, v_uv * u_textureScale + u_waveOffset2 * u_time).x ;
 
     // shoreline + waves
     vec3 waterColor = mix(u_foamColor, u_waterColor, diff + displacement);
 
-    vec3 waterNormals = texture2D(u_waveTextureNormals, v_uv * u_textureScale + u_waveOffset1 * u_time).rgb
-                      * texture2D(u_waveTextureNormals, v_uv * u_textureScale + u_waveOffset2 * u_time).rgb;
-    vec3 viewDir = normalize(u_cameraViewPos - gl_FragColor.xyz);
-    waterColor += saturate(dot(viewDir, waterNormals)) * u_foamColor;
+    // vec3 waterNormals = texture2D(u_waveTextureNormals, v_uv * u_textureScale + u_waveOffset1 * u_time).rgb
+    //                   * texture2D(u_waveTextureNormals, v_uv * u_textureScale + u_waveOffset2 * u_time).rgb;
+    // vec3 viewDir = normalize(u_cameraViewPos - gl_FragColor.xyz);
+    // waterColor += saturate(dot(viewDir, waterNormals)) * u_foamColor;
 
     // output
     gl_FragColor.rgb = waterColor;

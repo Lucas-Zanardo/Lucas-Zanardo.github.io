@@ -1,6 +1,6 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v4.2.57",
+		"generator":"Khronos glTF Blender I/O v4.2.60",
 		"version":"2.0"
 	},
 	"scene":0,
@@ -38,6 +38,19 @@
 			]
 		}
 	],
+	"materials":[
+		{
+			"doubleSided":true,
+			"name":"Material.001",
+			"pbrMetallicRoughness":{
+				"baseColorTexture":{
+					"index":0
+				},
+				"metallicFactor":0,
+				"roughnessFactor":0.5
+			}
+		}
+	],
 	"meshes":[
 		{
 			"name":"Plane",
@@ -48,7 +61,8 @@
 						"NORMAL":1,
 						"TEXCOORD_0":2
 					},
-					"indices":3
+					"indices":3,
+					"material":0
 				}
 			]
 		},
@@ -66,11 +80,24 @@
 			]
 		}
 	],
+	"textures":[
+		{
+			"sampler":0,
+			"source":0
+		}
+	],
+	"images":[
+		{
+			"mimeType":"image/png",
+			"name":"world_texture",
+			"uri":"world_texture.png"
+		}
+	],
 	"accessors":[
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":19169,
+			"count":14581,
 			"max":[
 				48.75468063354492,
 				13.277504920959473,
@@ -78,7 +105,7 @@
 			],
 			"min":[
 				-48.06238555908203,
-				-0.2510508596897125,
+				0.37975168228149414,
 				-48.09384536743164
 			],
 			"type":"VEC3"
@@ -86,19 +113,19 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":19169,
+			"count":14581,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":19169,
+			"count":14581,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":115008,
+			"count":84741,
 			"type":"SCALAR"
 		},
 		{
@@ -139,56 +166,62 @@
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":230028,
+			"byteLength":174972,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":230028,
-			"byteOffset":230028,
+			"byteLength":174972,
+			"byteOffset":174972,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":153352,
-			"byteOffset":460056,
+			"byteLength":116648,
+			"byteOffset":349944,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":230016,
-			"byteOffset":613408,
+			"byteLength":169482,
+			"byteOffset":466592,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":76752,
-			"byteOffset":843424,
+			"byteOffset":636076,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":76752,
-			"byteOffset":920176,
+			"byteOffset":712828,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":51168,
-			"byteOffset":996928,
+			"byteOffset":789580,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":26388,
-			"byteOffset":1048096,
+			"byteOffset":840748,
 			"target":34963
+		}
+	],
+	"samplers":[
+		{
+			"magFilter":9729,
+			"minFilter":9987
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":1074484,
+			"byteLength":867136,
 			"uri":"world.bin"
 		}
 	]

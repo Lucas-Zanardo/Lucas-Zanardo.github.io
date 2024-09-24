@@ -1,11 +1,6 @@
 import * as THREE from 'three';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js'
 import Stats from 'three/examples/jsm/libs/stats.module'
-import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
-import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
-import {BloomPass} from 'three/addons/postprocessing/BloomPass.js';
-import {FilmPass} from 'three/addons/postprocessing/FilmPass.js';
-import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 
 // Core
 import GameObjectManager from './core/GameObjectManager.js'
@@ -13,6 +8,7 @@ import InputManager from './core/InputManager.js';
 // Components
 import Player from './components/Player.js';
 import Mesh from './components/Mesh.js';
+import MeshBuffered from './components/MeshBuffered.js';
 import Water from './components/Water.js';
 import RigidBody from './components/RigidBody.js';
 import CameraFollow from './components/CameraFollow.js';
@@ -29,6 +25,7 @@ class Time {
 }
 
 export const GAME_WORLD_SIZE = 100;
+export const WORLD_Y_OFFSET = -20;
 
 export default class Game {
     renderer;
@@ -95,17 +92,23 @@ export default class Game {
         // Player
         {
             const player = this.#gameObjectManager.createGameObject(this.#scene, "Player");
-            player.addComponent(Mesh, this.#models.plane)
+            player.addComponent(Mesh, this.#models.plane);
             player.addComponent(Player);
             player.addComponent(RigidBody);
             cameraFollowComponent.setTarget(player);
+
+            // player.transform.scale(new THREE.Vector3(.5));
         }
 
 
         // World
         const world = this.#gameObjectManager.createGameObject(this.#scene, "World");
         world.addComponent(Mesh, this.#models.world);
-        world.transform.translateY(-10);
+        world.transform.translateY(WORLD_Y_OFFSET);
+
+        const forest = this.#gameObjectManager.createGameObject(this.#scene, "Forest");
+        this._forest = forest.addComponent(MeshBuffered, this.#models.tree, this.#models.forest.gltf.scene.children);
+        forest.transform.translateY(WORLD_Y_OFFSET);
 
         // Water
         {
@@ -120,7 +123,7 @@ export default class Game {
                 renderer: this.renderer,
                 camera: this.camera
             });
-            water.transform.translateY(-10);
+            water.transform.translateY(WORLD_Y_OFFSET);
         }
 
         // Lights and shadows
@@ -215,6 +218,7 @@ export default class Game {
         // render
         // depth pass
         this._water.plane.visible = false; // we don't want the depth of the water
+        this._forest._instancedMesh.visible = false; // we don't want the leaf to test for water
         this.#scene.overrideMaterial = this.depthMaterial;
         this.#scene.background = this._depthPassBackground;
         this.renderer.setRenderTarget(this.renderTarget);
@@ -222,6 +226,7 @@ export default class Game {
         
         // beauty pass
         this._water.plane.visible = true;        
+        this._forest._instancedMesh.visible = true;
         this.#scene.overrideMaterial = null;
         this.#scene.background = this._mainPassBackground;
         this.renderer.setRenderTarget(null);

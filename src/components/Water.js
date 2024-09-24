@@ -20,7 +20,7 @@ export default class Water extends Component {
             console.log("depth texture extension supported");
         }
 
-        const waterPlane = new THREE.PlaneGeometry(params.size, params.size);
+        // const waterPlane = new THREE.PlaneGeometry(params.size, params.size);
         const waterMat  = new THREE.ShaderMaterial({ 
             defines: {
                DEPTH_PACKING: supportsDepthTextureExtension === true ? 0 : 1,
@@ -50,7 +50,7 @@ export default class Water extends Component {
             fragmentShader: params.fragment.data,
             side: THREE.DoubleSide,
             transparent: true,
-            depthWrite: true,
+            // depthWrite: true,
         });
         this.material = waterMat;
 

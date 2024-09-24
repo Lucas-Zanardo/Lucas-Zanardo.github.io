@@ -12,11 +12,11 @@ function init(loadedModels, loadedTextures, loadedFiles) {
 
     // setup renderer
     const canvas = document.querySelector("#gameCanvas");
-    const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+    const renderer = new THREE.WebGLRenderer({ antialias: false, canvas });
     renderer.setPixelRatio(window.devicePixelRatio);
     // renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     // setup camera
     const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -52,9 +52,11 @@ function loadGroup (loader, group, outputProp = 'data', onLoadApply = (obj, data
 
 function loadObjects() {
     const models = {
-        plane: { url: 'models/hydravion.gltf' },
-        world: { url: 'models/world.gltf' },
-        water: { url: 'models/water.gltf' },
+        plane:  { url: 'models/hydravion.gltf' },
+        world:  { url: 'models/world.gltf' },
+        water:  { url: 'models/water.gltf' },
+        forest: { url: 'models/forest.gltf' },
+        tree:   { url: 'models/tree.gltf' },
     };
 
     const textures = {
@@ -81,6 +83,7 @@ function loadObjects() {
         if(itemsLoaded >= itemsTotal) {
             progressBar.style.opacity = "0";
             setTimeout(() => progressBar.style.display = 'none', 500);
+            console.log("LOADED");
         }
     };
     manager.onLoad = () => init(models, textures, files);
@@ -100,21 +103,31 @@ function loadObjects() {
             if ( child instanceof THREE.Mesh ) {
                 child.receiveShadow = true;
                 child.castShadow = true;
-                console.log(child.material.map);
-                child.material = new THREE.MeshToonMaterial({ 
+                const newMaterial = new THREE.MeshToonMaterial({ 
                     color: child.material.color,
-                    side: THREE.FrontSide,
+                    side: THREE.DoubleSide,
                     shadowSide: THREE.BackSide,
                     gradientMap: textures.three_tone_texture.data,
                     depthWrite: true,
                 });
+
+                if(child.material.transparent) {
+                    newMaterial.alphaTest = .5;
+                }
+
+                if(child.material.map) {
+                    child.material.map.minFilter = THREE.NearestFilter;
+                    child.material.map.magFilter = THREE.NearestFilter;
+                    newMaterial.map = child.material.map;
+                }
+
+                child.material = newMaterial;
             }
         } );
     });
     
     // Load files
     loadGroup(new THREE.FileLoader(manager), files);
-    console.log("LOADED");
 
     ////////////////////////////////////////////////////////////////////////////////////////
     
